@@ -1,7 +1,7 @@
 /**
  * @TODO get a reference to the Firebase Database object
  */
-
+const database = firebase.database().ref();  // almost like the query selector for firebase
 /**
  * @TODO get const references to the following elements:
  *      - div with id #all-messages
@@ -10,6 +10,16 @@
  *      - button with id #send-btn and the updateDB
  *        function as an onclick event handler
  */
+
+const allMessages = document.getElementById("all-messages");   // const means the variables arent changing
+const sendBtn = document.getElementById("send-btn");
+const messageElem = document.getElementById("message")
+const userNameElem = document.getElementById("username")
+
+
+
+
+
 
 /**
  * @TODO create a function called updateDB which takes
@@ -23,19 +33,47 @@
  */
 
 function updateDB(event) {
+
   // Prevent default refresh
   // Create data object
   // console.log the object
   // GET *PUSH* PUT DELETE
   // Write to our database
   // Reset message
+
+
+
+  event.preventDefault();  // stops refreshing as it is default behavior from button in forms 
+  
+  
+  const data = {  // when you wanna add data to a database you create an object
+    //PROPERTIES OF OBJECTS:
+    USERNAME:userNameElem.value,
+    MESSAGE: messageElem.value
+  }
+  database.push(data); // WE PUSH DATA TO DATABASE
+  console.log(data);
+
+
+
+  // reset the textboxes!
+
+ 
+  messageElem.value = "";
+
+
 }
+  
+sendBtn.addEventListener("click", updateDB)
 
 /**
  * @TODO add the addMessageToBoard function as an event
  * handler for the "child_added" event on the database
  * object
  */
+
+database.on("child_added", addMessageToBoard)
+
 
 /**
  * @TODO create a function called addMessageToBoard that
@@ -49,12 +87,20 @@ function updateDB(event) {
  */
 
 function addMessageToBoard(rowData) {
+  
   // Store the value of rowData inside object named 'data'
   // console.log data
   // Create a variable named singleMessage
   // that stores function call for makeSingleMessageHTML()
   // Append the new message HTML element to allMessages
+  
+  const data = rowData.val(); //makes it look like an object
+  console.log(data);
+
+  let singleMessage = makeSingleMessageHTML(data.USERNAME, data.MESSAGE);
+  allMessages.appendChild(singleMessage);
 }
+
 
 /**
  * @TODO create a function called makeSingleMessageHTML which takes
@@ -81,7 +127,30 @@ function makeSingleMessageHTML(usernameTxt, messageTxt) {
   // Append username
   // Create message P Tag
   // Return Parent Div
+
+  console.log("Here:", usernameTxt , messageTxt);
+
+  let parentDiv = document.createElement("div");
+  parentDiv.className = "single-message"
+
+  
+  let usernameP = document.createElement("p");
+  usernameP.className = "single-message-username";
+  usernameP.innerText = usernameTxt + ":"
+  parentDiv.appendChild(usernameP);
+
+  
+  let messageP = document.createElement("p");
+  messageP.innerText = messageTxt;
+  parentDiv.appendChild(messageP)
+
+  
+
+  return parentDiv;
+
+
 }
+
 
 /**
  * @BONUS add an onkeyup event handler to the form HTML
